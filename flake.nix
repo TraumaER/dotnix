@@ -15,22 +15,11 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-darwin }:
+  outputs = inputs@{ self, nixpkgs, home-manager, nix-darwin }:
     let
       systems = [ "x86_64-linux" "aarch64-darwin" ];
       
       forAllSystems = nixpkgs.lib.genAttrs systems;
-      
-      mkSystem = system: modules: 
-        if nixpkgs.lib.hasSuffix "darwin" system
-        then nix-darwin.lib.darwinSystem {
-          inherit system modules;
-          specialArgs = { inherit inputs; };
-        }
-        else nixpkgs.lib.nixosSystem {
-          inherit system modules;
-          specialArgs = { inherit inputs; };
-        };
     in
     {
       # Home Manager configurations
@@ -85,10 +74,10 @@
       devShells = forAllSystems (system: {
         default = nixpkgs.legacyPackages.${system}.mkShell {
           buildInputs = with nixpkgs.legacyPackages.${system}; [
-            nixos-rebuild
-            home-manager
+            git
+            vim
           ] ++ nixpkgs.lib.optionals (nixpkgs.lib.hasSuffix "darwin" system) [
-            nix-darwin.packages.${system}.default
+            # Darwin-specific tools can be added here
           ];
         };
       });

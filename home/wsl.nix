@@ -11,9 +11,6 @@
     # Terminal-focused tools for WSL
     openssh
     gnupg
-    
-    # WSL-specific utilities
-    wslu  # WSL utilities
   ];
 
   # WSL-specific program configurations

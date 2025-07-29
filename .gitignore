@@ -3,3 +3,18 @@
 .env
 .env.*
 !.env.example
+
+# Nix
+result
+result-*
+.direnv/
+
+# Home Manager
+.hm-backup/
+
+# Darwin
+darwin-configuration/
+
+# Build outputs
+*.drv
+*.nar
