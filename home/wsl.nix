@@ -29,7 +29,7 @@
 
   # User information (adjust as needed)
   home = {
-    username = "user";
-    homeDirectory = "/home/user";
+    username = "traumaer";
+    homeDirectory = "/home/traumaer";
   };
 }

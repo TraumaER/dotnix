@@ -25,7 +25,7 @@
       # Home Manager configurations
       homeConfigurations = {
         # macOS (ARM)
-        "user@darwin" = home-manager.lib.homeManagerConfiguration {
+        "traumaer@darwin" = home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.aarch64-darwin;
           modules = [
             ./home/darwin.nix
@@ -34,7 +34,7 @@
         };
         
         # Linux
-        "user@linux" = home-manager.lib.homeManagerConfiguration {
+        "traumaer@linux" = home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.x86_64-linux;
           modules = [
             ./home/linux.nix
@@ -43,7 +43,7 @@
         };
         
         # WSL
-        "user@wsl" = home-manager.lib.homeManagerConfiguration {
+        "traumaer@wsl" = home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.x86_64-linux;
           modules = [
             ./home/wsl.nix
