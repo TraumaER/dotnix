@@ -62,8 +62,11 @@
             {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-              home-manager.users.user = import ./home/darwin.nix;
+              home-manager.users.bannach = {
+                imports = [ ./home/darwin.nix ];
+              };
               home-manager.extraSpecialArgs = { inherit inputs; };
+              home-manager.backupFileExtension = "bak";
             }
           ];
           specialArgs = { inherit inputs; };

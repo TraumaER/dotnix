@@ -26,7 +26,7 @@
 
   # User information
   home = {
-    username = "traumaer";
-    homeDirectory = "/Users/traumaer";
+    username = "bannach";
+    homeDirectory = "/Users/bannach";
   };
 }
