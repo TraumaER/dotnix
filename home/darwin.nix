@@ -24,9 +24,5 @@
     # Add macOS-specific variables
   };
 
-  # User information
-  home = {
-    username = "bannach";
-    homeDirectory = "/Users/bannach";
-  };
+  # User information is set in flake.nix
 }
