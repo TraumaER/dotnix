@@ -21,13 +21,12 @@
     eza
     fzf
     tmux
-
-    # Development tools
     vim
     neovim
     docker
     docker-compose
     alejandra # Nix formatter
+    go
   ];
 
   # Shared program configurations

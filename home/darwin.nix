@@ -22,6 +22,14 @@
       signing.key = "08797C39E0828DC6";
       signing.signByDefault = true;
     };
+    # SSH configuration
+      ssh = {
+        enable = true;
+        addKeysToAgent = "yes";
+        extraConfig = ''
+            UseKeychain yes
+        '';
+      };
   };
 
   # Enable homebrew for macOS
