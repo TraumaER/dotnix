@@ -33,6 +33,7 @@
       # Add homebrew packages here
       "awscli"
       "sevenzip" # 7-zip
+      "nvm"
     ];
 
     # Casks (GUI applications)

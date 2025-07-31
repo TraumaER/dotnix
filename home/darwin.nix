@@ -23,13 +23,13 @@
       signing.signByDefault = true;
     };
     # SSH configuration
-      ssh = {
-        enable = true;
-        addKeysToAgent = "yes";
-        extraConfig = ''
-            UseKeychain yes
-        '';
-      };
+    ssh = {
+      enable = true;
+      addKeysToAgent = "yes";
+      extraConfig = ''
+        UseKeychain yes
+      '';
+    };
   };
 
   # Enable homebrew for macOS
