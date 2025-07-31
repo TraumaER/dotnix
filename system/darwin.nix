@@ -1,40 +1,46 @@
 { config, pkgs, lib, ... }:
 
 {
-  # System configuration for macOS (ARM only)
-  
-  # Enable nix-darwin
-  services.nix-daemon.enable = true;
+  # System configuration for macOS
+  system.primaryUser = "bannach";
+
+  # Nix configuration
+  nix.enable = false;
   
   # System packages
   environment.systemPackages = with pkgs; [
-    # System-level packages
+    # Essential system utilities needed for activation
+    curl
   ];
 
   # Homebrew configuration
   homebrew = {
     enable = true;
     onActivation = {
-      autoUpdate = false;  # Don't auto-update to avoid system changes
-      upgrade = false;     # Don't auto-upgrade to avoid system changes
-      cleanup = "none";    # Don't cleanup to avoid system changes
+      autoUpdate = true;
+      upgrade = true;
+      cleanup = "zap";
     };
     
     # Taps (repositories)
-    taps = [
-      "homebrew/core"
-      "homebrew/cask"
-    ];
+    taps = [];
     
     # Formulae (command-line tools)
     brews = [
       # Add homebrew packages here
+      "awscli"
+      "sevenzip"
     ];
     
     # Casks (GUI applications)
     casks = [
       # Add GUI applications here
     ];
+    
+    # Mac App Store apps
+    masApps = {
+      # Example: "Xcode" = 497799835;
+    };
   };
 
   # System settings scaffolding (not applied by default)
@@ -57,15 +63,7 @@
     #   AppleShowAllExtensions = true;
     # };
   };
-  
-  # Fonts
-  fonts = {
-    fontDir.enable = true;
-    fonts = with pkgs; [
-      # Add fonts here
-    ];
-  };
 
   # System version (required for nix-darwin)
-  system.stateVersion = 4;
+  system.stateVersion = 6;
 }

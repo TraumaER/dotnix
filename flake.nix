@@ -62,11 +62,7 @@
             {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-              home-manager.users.bannach = {
-                imports = [ ./home/darwin.nix ];
-                home.username = "bannach";
-                home.homeDirectory = "/Users/bannach";
-              };
+              home-manager.users.bannach = import ./home/darwin.nix;
               home-manager.extraSpecialArgs = { inherit inputs; };
               home-manager.backupFileExtension = "bak";
             }

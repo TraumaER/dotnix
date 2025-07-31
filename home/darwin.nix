@@ -24,5 +24,9 @@
     # Add macOS-specific variables
   };
 
-  # User information is set in flake.nix
+  # User information
+  home = {
+    username = "bannach";
+    homeDirectory = lib.mkForce "/Users/bannach";
+  };
 }
