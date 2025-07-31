@@ -36,6 +36,15 @@
       userEmail = lib.mkDefault "4845159+TraumaER@users.noreply.github.com";
 
       signing.format = lib.mkDefault "openpgp";
+      signing.signByDefault = lib.mkDefault true;
+
+      extraConfig = {
+        url = {
+            "git@github.com:" = {
+                  insteadOf = "https://github.com/";
+                };
+        };
+      };
 
     };
     
