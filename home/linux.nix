@@ -1,6 +1,9 @@
-{ config, pkgs, lib, ... }:
-
 {
+  config,
+  pkgs,
+  lib,
+  ...
+}: {
   imports = [
     ./shared.nix
     ../modules/homebrew.nix
@@ -11,7 +14,7 @@
   home.packages = with pkgs; [
     # GUI applications for Linux
     firefox
-    
+
     # Linux-specific tools
     xclip
     wl-clipboard
@@ -24,7 +27,7 @@
 
   # Enable homebrew for Linux
   homebrew.enable = true;
-  
+
   # Enable keychain for Linux
   keychain.enable = true;
 

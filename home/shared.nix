@@ -1,6 +1,9 @@
-{ config, pkgs, lib, ... }:
-
 {
+  config,
+  pkgs,
+  lib,
+  ...
+}: {
   # Shared packages across all platforms
   home.packages = with pkgs; [
     # Terminal utilities
@@ -17,18 +20,19 @@
     eza
     fzf
     tmux
-    
+
     # Development tools
     vim
     neovim
     docker
     docker-compose
+    alejandra # Nix formatter
   ];
 
   # Shared program configurations
   programs = {
     home-manager.enable = true;
-    
+
     git = {
       enable = true;
       # Configure git settings here
@@ -40,14 +44,13 @@
 
       extraConfig = {
         url = {
-            "git@github.com:" = {
-                  insteadOf = "https://github.com/";
-                };
+          "git@github.com:" = {
+            insteadOf = "https://github.com/";
+          };
         };
       };
-
     };
-    
+
     bash = {
       enable = true;
       shellAliases = {
@@ -57,7 +60,7 @@
         grep = "grep --color=auto";
       };
     };
-    
+
     zsh = {
       enable = true;
       enableCompletion = true;
@@ -70,7 +73,7 @@
         grep = "grep --color=auto";
       };
     };
-    
+
     starship = {
       enable = true;
       settings = {
@@ -78,7 +81,7 @@
         format = "$all$character";
       };
     };
-    
+
     direnv = {
       enable = true;
       nix-direnv.enable = true;

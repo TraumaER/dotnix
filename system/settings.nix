@@ -1,12 +1,15 @@
-{ config, pkgs, lib, ... }:
-
 {
+  config,
+  pkgs,
+  lib,
+  ...
+}: {
   # System settings scaffolding - templates for configuration without applying changes
   # Uncomment and modify sections as needed for your setup
-  
+
   # This file provides examples of system settings that can be applied
   # All settings are commented out by default to avoid unintended changes
-  
+
   system.defaults = {
     # macOS Dock settings
     # dock = {
@@ -19,7 +22,7 @@
     #   static-only = false;
     #   tilesize = 48;
     # };
-    
+
     # macOS Finder settings
     # finder = {
     #   AppleShowAllExtensions = true;
@@ -32,7 +35,7 @@
     #   ShowPathbar = true;
     #   ShowStatusBar = true;
     # };
-    
+
     # Global macOS settings
     # NSGlobalDomain = {
     #   AppleInterfaceStyle = "Dark";
@@ -54,43 +57,43 @@
     #   PMPrintingExpandedStateForPrint = true;
     #   PMPrintingExpandedStateForPrint2 = true;
     # };
-    
+
     # Login window settings
     # loginwindow = {
     #   GuestEnabled = false;
     #   SHOWFULLNAME = false;
     # };
-    
+
     # Screen capture settings
     # screencapture = {
     #   location = "~/Pictures/Screenshots";
     #   type = "png";
     # };
-    
+
     # Trackpad settings
     # trackpad = {
     #   Clicking = true;
     #   TrackpadThreeFingerDrag = true;
     # };
-    
+
     # Universal Access settings
     # universalaccess = {
     #   reduceMotion = true;
     #   reduceTransparency = true;
     # };
   };
-  
+
   # Keyboard settings
   # keyboard = {
   #   enableKeyMapping = true;
   #   remapCapsLockToEscape = true;
   # };
-  
+
   # Additional system configuration examples
   # security = {
   #   pam.enableSudoTouchIdAuth = true;
   # };
-  
+
   # Time zone and locale settings
   # time.timeZone = "America/New_York";
   # i18n = {

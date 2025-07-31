@@ -1,14 +1,15 @@
-{ config, pkgs, lib, ... }:
-
-with lib;
-
-let
-  cfg = config.homebrew;
-in
 {
+  config,
+  pkgs,
+  lib,
+  ...
+}:
+with lib; let
+  cfg = config.homebrew;
+in {
   options.homebrew = {
     enable = mkEnableOption "homebrew support";
-    
+
     packages = mkOption {
       type = types.listOf types.str;
       default = [];
