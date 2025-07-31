@@ -38,18 +38,18 @@ in
 
     # Shell integration using the modern approach
     programs.bash.bashrcExtra = mkIf cfg.enable ''
-      if command -v brew &> /dev/null; then
-        if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-        fi
+      if [[ "$OSTYPE" == "linux-gnu"* ]] && [[ -x "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+      elif [[ "$OSTYPE" == "darwin"* ]] && [[ -x "/opt/homebrew/bin/brew" ]]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
       fi
     '';
 
-    programs.zsh.envExtra = mkIf cfg.enable ''
-      if command -v brew &> /dev/null; then
-        if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-        fi
+    programs.zsh.initContent = mkIf cfg.enable ''
+      if [[ "$OSTYPE" == "linux-gnu"* ]] && [[ -x "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+      elif [[ "$OSTYPE" == "darwin"* ]] && [[ -x "/opt/homebrew/bin/brew" ]]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
       fi
     '';
   };

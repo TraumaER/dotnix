@@ -14,6 +14,11 @@
   # macOS-specific program configurations
   programs = {
     # Platform-specific programs
+    git = {
+      userEmail = "113929542+abannachGrafana@users.noreply.github.com";
+      signing.key = "08797C39E0828DC6";
+      signing.signByDefault = true;
+    };
   };
 
   # Enable homebrew for macOS

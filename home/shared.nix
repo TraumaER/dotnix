@@ -4,6 +4,7 @@
   # Shared packages across all platforms
   home.packages = with pkgs; [
     # Terminal utilities
+    gnupg
     git
     curl
     wget
@@ -29,14 +30,19 @@
     git = {
       enable = true;
       # Configure git settings here
+      userName = lib.mkDefault "Adam Bannach";
+      userEmail = lib.mkDefault "4845159+TraumaER@users.noreply.github.com";
+
+      signing.format = lib.mkDefault "openpgp";
+
     };
     
     bash = {
       enable = true;
       shellAliases = {
-        ll = "ls -alF";
-        la = "ls -A";
-        l = "ls -CF";
+        ll = "eza -alF";
+        la = "eza -A";
+        l = "eza -CF";
         grep = "grep --color=auto";
       };
     };
@@ -46,6 +52,12 @@
       enableCompletion = true;
       autosuggestion.enable = true;
       syntaxHighlighting.enable = true;
+      shellAliases = {
+        ll = "eza -alF";
+        la = "eza -A";
+        l = "eza -CF";
+        grep = "grep --color=auto";
+      };
     };
     
     starship = {
