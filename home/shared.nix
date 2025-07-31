@@ -21,6 +21,8 @@
     # Development tools
     vim
     neovim
+    docker
+    docker-compose
   ];
 
   # Shared program configurations
