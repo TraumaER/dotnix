@@ -12,7 +12,6 @@
   # macOS-specific packages
   home.packages = with pkgs; [
     # macOS-specific tools
-
   ];
 
   # macOS-specific program configurations
