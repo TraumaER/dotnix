@@ -49,6 +49,6 @@
   # User information
   home = {
     username = "bannach";
-    homeDirectory = lib.mkForce "/Users/bannach";
+    homeDirectory = "/Users/bannach";
   };
 }

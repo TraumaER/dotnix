@@ -6,6 +6,7 @@
 }: {
   # System configuration for macOS
   system.primaryUser = "bannach";
+  users.users.bannach.home = "/Users/bannach";
 
   # Nix configuration
   nix.enable = false;
