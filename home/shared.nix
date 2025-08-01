@@ -7,32 +7,34 @@
   # Shared packages across all platforms
   home.packages = with pkgs; [
     # Nerd Fonts
-    nerd-fonts.jetbrains-mono
     nerd-fonts.fira-code
+    nerd-fonts.jetbrains-mono
     nerd-fonts.ubuntu
     nerd-fonts.ubuntu-mono
 
     # Terminal utilities
-    gnupg
-    git
-    gh # GitHub CLI
-    curl
-    wget
-    tree
-    htop
-    neofetch
-    ripgrep
-    fd
+    alejandra # Nix formatter
     bat
-    eza
-    fzf
-    tmux
-    vim
-    neovim
+    curl
     docker
     docker-compose
-    alejandra # Nix formatter
+    eza
+    fd
+    fzf
+    gh # GitHub CLI
+    git
+    gnupg
     go
+    htop
+    neofetch
+    neovim
+    ripgrep
+    shellcheck
+    shfmt
+    tmux
+    tree
+    vim
+    wget
   ];
 
   # Shared program configurations

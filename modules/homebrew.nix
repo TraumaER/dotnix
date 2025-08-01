@@ -18,20 +18,6 @@ in {
   };
 
   config = mkIf cfg.enable {
-    # Install homebrew if not present
-    home.activation.installHomebrew = lib.hm.dag.entryAfter ["writeBoundary"] ''
-      if ! [[ -x "/opt/homebrew/bin/brew" ]] && ! [[ -x "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then
-        echo "Installing Homebrew..."
-        if [[ "$OSTYPE" == "darwin"* ]]; then
-          /bin/bash -c "$(/usr/bin/curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-          /bin/bash -c "$(/usr/bin/curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          # Add to PATH for Linux
-          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-        fi
-      fi
-    '';
-
     # Add homebrew to PATH
     home.sessionPath = mkIf (pkgs.stdenv.isLinux) [
       "/home/linuxbrew/.linuxbrew/bin"

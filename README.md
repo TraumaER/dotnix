@@ -27,14 +27,32 @@ A minimal, cross-platform Nix configuration using home-manager and nix-darwin th
 
 ## Quick Start
 
-### Prerequisites
+### Automated Setup
+
+Run the setup script to automatically install prerequisites for your platform:
+
+```bash
+./setup.sh
+```
+
+This script will:
+- Detect your operating system (macOS, Linux, or WSL)
+- Install Nix with flakes enabled
+- Install Homebrew (required for homebrew module)
+- Install platform-specific dependencies (Xcode Command Line Tools on macOS, build tools on Linux)
+- Configure Nix with experimental features enabled
+
+### Manual Prerequisites (if not using setup script)
 
 Install Nix with flakes enabled:
 ```bash
 # Install Nix
-curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install --determinate
 
-# Or enable flakes on existing Nix installation
+# Install Homebrew (required for homebrew module)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Enable flakes
 mkdir -p ~/.config/nix
 echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
 ```
