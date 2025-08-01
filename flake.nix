@@ -28,7 +28,7 @@
     # Home Manager configurations
     homeConfigurations = {
       # macOS (ARM)
-      "traumaer@darwin" = home-manager.lib.homeManagerConfiguration {
+      "picard" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.aarch64-darwin;
         modules = [
           ./home/darwin.nix
@@ -37,7 +37,7 @@
       };
 
       # Linux
-      "traumaer@linux" = home-manager.lib.homeManagerConfiguration {
+      "riker" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
         modules = [
           ./home/linux.nix
@@ -46,7 +46,7 @@
       };
 
       # WSL
-      "traumaer@wsl" = home-manager.lib.homeManagerConfiguration {
+      "crusher" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
         modules = [
           ./home/wsl.nix
@@ -57,7 +57,7 @@
 
     # System configurations
     darwinConfigurations = {
-      "darwin-system" = nix-darwin.lib.darwinSystem {
+      "holodeck" = nix-darwin.lib.darwinSystem {
         system = "aarch64-darwin";
         modules = [
           ./system/darwin.nix

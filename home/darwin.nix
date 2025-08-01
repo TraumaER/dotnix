@@ -8,10 +8,11 @@
     ./shared.nix
     ../modules/homebrew.nix
   ];
-
+  fonts.fontconfig.enable = true;
   # macOS-specific packages
   home.packages = with pkgs; [
     # macOS-specific tools
+
   ];
 
   # macOS-specific program configurations
@@ -29,6 +30,12 @@
       extraConfig = ''
         UseKeychain yes
       '';
+    };
+    bash.shellAliases = {
+      rebuild = "sudo darwin-rebuild switch --flake ~/.config/dotnix#holodeck";
+    };
+    zsh.shellAliases = {
+      rebuild = "sudo darwin-rebuild switch --flake ~/.config/dotnix#holodeck";
     };
   };
 

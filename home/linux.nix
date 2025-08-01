@@ -23,6 +23,12 @@
   # Linux-specific program configurations
   programs = {
     # Platform-specific programs
+    bash.shellAliases = {
+      rebuild = "home-manager switch --flake ~/.config/dotnix#riker";
+    };
+    zsh.shellAliases = {
+      rebuild = "home-manager switch --flake ~/.config/dotnix#riker";
+    };
   };
 
   # Enable homebrew for Linux

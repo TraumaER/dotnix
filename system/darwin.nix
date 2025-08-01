@@ -34,7 +34,7 @@
       "awscli"
       "sevenzip" # 7-zip
       "nvm"
-      
+
       # Docker container runtimes (CLI tools managed by nixpkgs in shared.nix)
       "colima" # Lightweight Docker runtime alternative
     ];
@@ -42,7 +42,8 @@
     # Casks (GUI applications)
     casks = [
       # Add GUI applications here
-      
+      "1password"
+
       # Docker container runtimes
       "orbstack" # Native macOS Docker Desktop alternative with GUI
     ];
@@ -57,11 +58,11 @@
   # - Docker CLI tools (docker, docker-compose) are managed by nixpkgs in shared.nix
   # - OrbStack and Colima provide container runtime backends
   # - Both tools can coexist and be switched using Docker contexts:
-  #   
+  #
   #   Switch to OrbStack: docker context use orbstack
   #   Switch to Colima:   docker context use colima
   #   List contexts:      docker context ls
-  #   
+  #
   # - OrbStack: Native macOS GUI + CLI, superior performance, commercial license
   # - Colima: CLI-only, good performance, completely free and open-source
   #

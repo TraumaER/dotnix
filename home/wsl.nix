@@ -19,6 +19,12 @@
   # WSL-specific program configurations
   programs = {
     # Platform-specific programs
+    bash.shellAliases = {
+      rebuild = "home-manager switch --flake ~/.config/dotnix#crusher";
+    };
+    zsh.shellAliases = {
+      rebuild = "home-manager switch --flake ~/.config/dotnix#crusher";
+    };
   };
 
   # Enable keychain for WSL

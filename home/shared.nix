@@ -6,6 +6,12 @@
 }: {
   # Shared packages across all platforms
   home.packages = with pkgs; [
+    # Nerd Fonts
+    nerd-fonts.jetbrains-mono
+    nerd-fonts.fira-code
+    nerd-fonts.ubuntu
+    nerd-fonts.ubuntu-mono
+
     # Terminal utilities
     gnupg
     git
