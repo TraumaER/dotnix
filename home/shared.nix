@@ -94,7 +94,7 @@
         grep = "grep --color=auto";
       };
       sessionVariables = {
-        GOPROXY = "http://localhost:3000,direct";
+        GOPROXY = "http://localhost:3100,direct";
       };
     };
 
