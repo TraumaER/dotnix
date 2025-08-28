@@ -18,3 +18,5 @@ darwin-configuration/
 # Build outputs
 *.drv
 *.nar
+
+home/work.nix
