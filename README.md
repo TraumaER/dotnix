@@ -64,13 +64,13 @@ Since home-manager won't be available on the first run, use nix to run it:
 #### macOS (System + Home Manager)
 ```bash
 # First time - build and switch system configuration (includes home-manager)
-nix run nix-darwin -- switch --flake .#darwin-system
+nix run nix-darwin -- switch --flake .#holodeck
 
 # Or just Home Manager for first time
 nix run home-manager/master -- switch --flake .#user@darwin
 
 # Subsequent runs (after home-manager is installed)
-darwin-rebuild switch --flake .#darwin-system
+darwin-rebuild switch --flake .#holodeck
 home-manager switch --flake .#user@darwin
 ```
 
