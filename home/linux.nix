@@ -29,13 +29,25 @@
     zsh.shellAliases = {
       rebuild = "home-manager switch --flake ~/.config/dotnix#riker";
     };
+    gpg.enable = true;
+  };
+  services = {
+    gpg-agent = {
+      enable = true;
+      pinentry.package = pkgs.pinentry-curses;
+      defaultCacheTtl = 34560000;
+      maxCacheTtl = 34560000;
+    };
   };
 
   # Enable homebrew for Linux
   homebrew.enable = true;
 
   # Enable keychain for Linux
-  keychain.enable = true;
+  keychain = {
+    enable = true;
+    keys = ["id_ed25519" "F46A524D943277BD"];
+  };
 
   # Linux-specific environment variables
   home.sessionVariables = {
@@ -44,7 +56,7 @@
 
   # User information (adjust as needed)
   home = {
-    username = "traumaer";
-    homeDirectory = "/home/traumaer";
+    username = "bannach";
+    homeDirectory = "/home/bannach";
   };
 }

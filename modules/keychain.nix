@@ -12,19 +12,13 @@ in {
 
     keys = mkOption {
       type = types.listOf types.str;
-      default = ["id_rsa" "id_ed25519"];
+      default = ["id_ed25519"];
       description = "List of SSH keys to load with keychain";
-    };
-
-    agents = mkOption {
-      type = types.listOf (types.enum ["ssh" "gpg"]);
-      default = ["ssh"];
-      description = "List of agents to start (ssh, gpg)";
     };
 
     extraFlags = mkOption {
       type = types.listOf types.str;
-      default = ["--quiet"];
+      default = [];
       description = "Extra flags to pass to keychain";
     };
   };
@@ -37,7 +31,7 @@ in {
     programs.bash.bashrcExtra = ''
       # Keychain integration
       if command -v keychain &> /dev/null; then
-        eval $(keychain ${concatStringsSep " " cfg.extraFlags} --eval ${concatMapStringsSep " " (agent: "--agents ${agent}") cfg.agents} ${concatStringsSep " " cfg.keys})
+        eval $(keychain ${concatStringsSep " " cfg.extraFlags} --eval ${concatStringsSep " " cfg.keys})
       fi
     '';
 
@@ -45,7 +39,7 @@ in {
     programs.zsh.envExtra = ''
       # Keychain integration
       if command -v keychain &> /dev/null; then
-        eval $(keychain ${concatStringsSep " " cfg.extraFlags} --eval ${concatMapStringsSep " " (agent: "--agents ${agent}") cfg.agents} ${concatStringsSep " " cfg.keys})
+        eval $(keychain ${concatStringsSep " " cfg.extraFlags} --eval ${concatStringsSep " " cfg.keys})
       fi
     '';
 
@@ -53,7 +47,7 @@ in {
     programs.fish.interactiveShellInit = mkIf config.programs.fish.enable ''
       # Keychain integration
       if command -v keychain > /dev/null
-        eval (keychain ${concatStringsSep " " cfg.extraFlags} --eval ${concatMapStringsSep " " (agent: "--agents ${agent}") cfg.agents} ${concatStringsSep " " cfg.keys})
+        eval (keychain ${concatStringsSep " " cfg.extraFlags} --eval ${concatStringsSep " " cfg.keys})
       end
     '';
   };

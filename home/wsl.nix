@@ -25,6 +25,13 @@
     zsh.shellAliases = {
       rebuild = "home-manager switch --flake ~/.config/dotnix#crusher";
     };
+    gpg.enable = true;
+  };
+  services = {
+    gpg-agent = {
+      enable = true;
+      pinentry.package = pkgs.pinentry-curses;
+    };
   };
 
   # Enable keychain for WSL
@@ -38,7 +45,7 @@
 
   # User information (adjust as needed)
   home = {
-    username = "traumaer";
-    homeDirectory = "/home/traumaer";
+    username = "bannach";
+    homeDirectory = "/home/bannach";
   };
 }

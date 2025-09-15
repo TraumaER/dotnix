@@ -6,6 +6,8 @@
 }: {
   # Shared packages across all platforms
   home.packages = with pkgs; [
+    # Shell configuration
+
     # Nerd Fonts
     nerd-fonts.fira-code
     nerd-fonts.jetbrains-mono
@@ -53,7 +55,10 @@
     htop
     neofetch
     neovim
+    pay-respects
     ripgrep
+    rustup
+    rustscan
     shellcheck
     shfmt
     tmux
@@ -75,8 +80,12 @@
 
       signing.format = lib.mkDefault "openpgp";
       signing.signByDefault = lib.mkDefault true;
+      signing.key = "F46A524D943277BD";
 
       extraConfig = {
+        init = {
+          defaultBranch = "main";
+        };
         url = {
           "git@github.com:" = {
             insteadOf = "https://github.com/";
@@ -96,6 +105,11 @@
       sessionVariables = {
         GOPROXY = "http://localhost:3100,direct";
       };
+      profileExtra = ''
+        if [ -t 1 ] && [ "$SHELL" != "$(command -v zsh)" ]; then
+          exec zsh
+        fi
+      '';
     };
 
     zsh = {
@@ -113,11 +127,32 @@
       sessionVariables = {
         GOPROXY = "http://localhost:3100,direct";
       };
+      oh-my-zsh = {
+        enable = true;
+        plugins = [
+          "brew"
+          "git"
+          "kubectl"
+          "debian"
+          "npm"
+          "nvm"
+          "colored-man-pages"
+          "colorize"
+          "pip"
+          "python"
+          "gh"
+        ];
+      };
+    };
+
+    pay-respects = {
+      enable = true;
+      enableZshIntegration = true;
     };
 
     starship = {
       enable = true;
-      settings = lib.importTOML ./starship-nerd-font-symbols.toml;
+      settings = lib.importTOML ./starship-bracketed-segments.toml;
     };
 
     direnv = {
