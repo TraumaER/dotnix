@@ -80,7 +80,7 @@
 
       signing.format = lib.mkDefault "openpgp";
       signing.signByDefault = lib.mkDefault true;
-      signing.key = "F46A524D943277BD";
+      signing.key = lib.mkDefault "F46A524D943277BD";
 
       extraConfig = {
         init = {
@@ -143,6 +143,12 @@
           "gh"
         ];
       };
+    };
+
+    fzf = {
+        enable = true;
+        enableZshIntegration = true;
+        enableBashIntegration = true;
     };
 
     pay-respects = {

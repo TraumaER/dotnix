@@ -44,7 +44,8 @@
     casks = [
       # Add GUI applications here
       "1password"
-
+      "kap"
+      "alt-tab"
       # Docker container runtimes
       "orbstack" # Native macOS Docker Desktop alternative with GUI
     ];
