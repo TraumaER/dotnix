@@ -6,6 +6,10 @@
 }:
 with lib; let
   cfg = config.homebrew;
+  brewPath =
+    if pkgs.stdenv.isDarwin
+    then "/opt/homebrew/bin/brew"
+    else "/home/linuxbrew/.linuxbrew/bin/brew";
 in {
   options.homebrew = {
     enable = mkEnableOption "homebrew support";
@@ -22,6 +26,17 @@ in {
     home.sessionPath = mkIf (pkgs.stdenv.isLinux) [
       "/home/linuxbrew/.linuxbrew/bin"
     ];
+
+    home.activation.brewInstall = lib.hm.dag.entryAfter ["writeBoundary"] ''
+            if [ ${toString (length cfg.packages)} -gt 0 ]; then
+              $DRY_RUN_CMD echo "Installing Homebrew packages..."
+              $DRY_RUN_CMD cat > "Brewfile" << 'EOF'
+      ${concatMapStrings (pkg: "brew \"${pkg}\"\n") cfg.packages}
+      EOF
+              $DRY_RUN_CMD ${brewPath} bundle --file="Brewfile"
+              $DRY_RUN_CMD rm -f "Brewfile"
+            fi
+    '';
 
     # Shell integration using the modern approach
     programs.bash.bashrcExtra = mkIf cfg.enable ''
