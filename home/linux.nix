@@ -14,7 +14,6 @@
   # Linux-specific packages
   home.packages = with pkgs; [
     # GUI applications for Linux
-    firefox
 
     # Linux-specific tools
     xclip
@@ -33,6 +32,7 @@
       };
     };
     gpg.enable = true;
+    git.signing.signByDefault = false;
     git.signing.key = "C34C1E16C99F5810";
   };
   services = {
@@ -48,19 +48,13 @@
   homebrew = {
     enable = true;
     brews = [
-      # Add homebrew packages here
-      "awscli"
-      "sevenzip" # 7-zip
-
-      # Docker container runtimes (CLI tools managed by nixpkgs in shared.nix)
-      "colima" # Lightweight Docker runtime alternative
     ];
     casks = [];
   };
 
   # Enable keychain for Linux
   keychain = {
-    enable = true;
+    enable = false;
     keys = ["id_ed25519" "C34C1E16C99F5810"];
   };
 
@@ -73,7 +67,7 @@
 
   # User information (adjust as needed)
   home = {
-    username = "bannach";
-    homeDirectory = "/home/bannach";
+    username = "traumaer";
+    homeDirectory = "/home/traumaer";
   };
 }

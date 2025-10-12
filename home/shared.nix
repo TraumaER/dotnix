@@ -88,11 +88,11 @@
         init = {
           defaultBranch = "main";
         };
-        url = {
-          "git@github.com:" = {
-            insteadOf = "https://github.com/";
-          };
-        };
+        #        url = {
+        #          "git@github.com:" = {
+        #            insteadOf = "https://github.com/";
+        #          };
+        #        };
       };
       aliases = {
         # https://fortes.com/2022/make-git-better-with-fzf/
@@ -132,6 +132,7 @@
       enableCompletion = true;
       autosuggestion.enable = true;
       syntaxHighlighting.enable = true;
+
       shellAliases = {
         ll = "eza -alF";
         la = "eza -A";
@@ -159,6 +160,15 @@
           "gh"
         ];
       };
+    };
+
+    eza = {
+      enable = true;
+      icons = "auto";
+      git = true;
+      enableZshIntegration = true;
+      enableBashIntegration = true;
+      colors = "auto";
     };
 
     fzf = {
