@@ -8,6 +8,7 @@
     ./shared.nix
     ../modules/homebrew.nix
     ../modules/keychain.nix
+    ../modules/nvm.nix
   ];
 
   # Linux-specific packages
@@ -26,10 +27,13 @@
     bash.shellAliases = {
       rebuild = "home-manager switch --flake ~/.config/dotnix#riker";
     };
-    zsh.shellAliases = {
-      rebuild = "home-manager switch --flake ~/.config/dotnix#riker";
+    zsh = {
+      shellAliases = {
+        rebuild = "home-manager switch --flake ~/.config/dotnix#riker";
+      };
     };
     gpg.enable = true;
+    git.signing.key = "C34C1E16C99F5810";
   };
   services = {
     gpg-agent = {
@@ -41,13 +45,26 @@
   };
 
   # Enable homebrew for Linux
-  homebrew.enable = true;
+  homebrew = {
+    enable = true;
+    brews = [
+      # Add homebrew packages here
+      "awscli"
+      "sevenzip" # 7-zip
+
+      # Docker container runtimes (CLI tools managed by nixpkgs in shared.nix)
+      "colima" # Lightweight Docker runtime alternative
+    ];
+    casks = [];
+  };
 
   # Enable keychain for Linux
   keychain = {
     enable = true;
-    keys = ["id_ed25519" "F46A524D943277BD"];
+    keys = ["id_ed25519" "C34C1E16C99F5810"];
   };
+
+  nvm.enable = true;
 
   # Linux-specific environment variables
   home.sessionVariables = {

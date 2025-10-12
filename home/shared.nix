@@ -56,6 +56,7 @@
     htop
     neofetch
     neovim
+    openssh
     pay-respects
     ripgrep
     rustup
@@ -143,6 +144,7 @@
       };
       oh-my-zsh = {
         enable = true;
+        custom = "${config.home.homeDirectory}/.oh-my-zsh/custom";
         plugins = [
           "brew"
           "git"
