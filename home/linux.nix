@@ -47,7 +47,7 @@
   # Enable homebrew for Linux
   homebrew = {
     enable = true;
-    packages = [
+    brews = [
       # Add homebrew packages here
       "awscli"
       "sevenzip" # 7-zip
@@ -55,6 +55,7 @@
       # Docker container runtimes (CLI tools managed by nixpkgs in shared.nix)
       "colima" # Lightweight Docker runtime alternative
     ];
+    casks = [];
   };
 
   # Enable keychain for Linux
