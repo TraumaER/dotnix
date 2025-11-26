@@ -53,6 +53,15 @@
         ];
         extraSpecialArgs = {inherit inputs;};
       };
+
+      # Batcomputer
+      "worf" = home-manager.lib.homeManagerConfiguration {
+        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+        modules = [
+          ./home/worf.nix
+        ];
+        extraSpecialArgs = {inherit inputs;};
+      };
     };
 
     # System configurations
