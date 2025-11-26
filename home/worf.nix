@@ -37,8 +37,8 @@
     };
     gpg.enable = true;
     git = {
-        signing.format = "ssh";
-        signing.key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILkhuppayEplrShbSTxxiuYXmylEGuqZqw/PlqTVs6d+";
+      signing.format = "ssh";
+      signing.key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILkhuppayEplrShbSTxxiuYXmylEGuqZqw/PlqTVs6d+";
     };
   };
   services = {
