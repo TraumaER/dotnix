@@ -40,6 +40,41 @@
       signing.format = "ssh";
       signing.key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILkhuppayEplrShbSTxxiuYXmylEGuqZqw/PlqTVs6d+";
     };
+    ssh = {
+      enable = true;
+      matchBlocks = {
+        "impala" = {
+          host = "impala"; # becomes: Host impala
+          hostname = "impala.lan"; # HostName impala.lan
+          user = "traumaer";
+        };
+        "castiel" = {
+          host = "castiel"; # becomes: Host impala
+          hostname = "castiel.lan"; # HostName impala.lan
+          user = "traumaer";
+        };
+        "menofletters" = {
+          host = "menofletters"; # becomes: Host impala
+          hostname = "menofletters.lan"; # HostName impala.lan
+          user = "traumaer";
+        };
+        "bobby" = {
+          host = "bobby"; # becomes: Host impala
+          hostname = "bobby.lan"; # HostName impala.lan
+          user = "traumaer";
+        };
+        "bunker" = {
+          host = "bunker"; # becomes: Host impala
+          hostname = "bunker.lan"; # HostName impala.lan
+          user = "traumaer";
+        };
+        "chuck" = {
+          host = "chuck";
+          hostname = "chuck.lan";
+          user = "bannach";
+        };
+      };
+    };
   };
   services = {
     gpg-agent = {

@@ -14,6 +14,9 @@
     nerd-fonts.ubuntu
     nerd-fonts.ubuntu-mono
 
+    # Java
+    gradle
+
     # Terminal utilities
     alejandra # Nix formatter
     bat
@@ -36,6 +39,9 @@
       ]
     ))
     azure-cli
+    awscli2
+    # Networking
+    dig
 
     # Version control
     gh # GitHub CLI
@@ -216,6 +222,11 @@
       athens_storage:
         driver: local
   '';
+
+  home.sessionPath = [
+    #  Add directories here to include them in the session PATH variable
+    "$HOME/.local/bin"
+  ];
 
   # Home Manager configuration
   home.stateVersion = "25.05";
