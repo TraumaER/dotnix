@@ -32,22 +32,16 @@
     # Formulae (command-line tools)
     brews = [
       # Add homebrew packages here
-      "awscli"
       "sevenzip" # 7-zip
       "nvm"
-
-      # Docker container runtimes (CLI tools managed by nixpkgs in shared.nix)
-      "colima" # Lightweight Docker runtime alternative
     ];
 
     # Casks (GUI applications)
     casks = [
       # Add GUI applications here
-      "1password"
       "kap"
       "alt-tab"
       # Docker container runtimes
-      "orbstack" # Native macOS Docker Desktop alternative with GUI
     ];
 
     # Mac App Store apps

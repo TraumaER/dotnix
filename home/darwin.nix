@@ -3,7 +3,10 @@
   pkgs,
   lib,
   ...
-}: {
+}: let
+  allowedSigners = ./git-allowed-signers;
+  allowedSignersPath = "${config.xdg.configHome}/git/allowed_signers";
+in {
   imports = [
     ./shared.nix
     ../modules/homebrew.nix
@@ -16,69 +19,51 @@
 
   # macOS-specific program configurations
   programs = {
+    # SSH is managed by 1Password's ssh-agent, so this is disabled.
     ssh = {
-      enable = true;
-      addKeysToAgent = "yes";
-      extraConfig = ''
-        UseKeychain yes
-      '';
+      enable = false;
+      matchBlocks."*" = {
+        addKeysToAgent = "yes";
+        extraOptions = {
+          UseKeychain = "yes";
+        };
+      };
     };
     git = {
-      userEmail = "113929542+abannachGrafana@users.noreply.github.com";
-      signing.key = "08797C39E0828DC6";
+      settings = {
+        user.email = "244587300+abannach-onebrief@users.noreply.github.com";
+        gpg.ssh.allowedSignersFile = allowedSignersPath;
+      };
+      signing.format = "ssh";
+      signing.key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILEFX2ZiAHE1UWQ7f3AWylMJBH+bJXQEss6hxkb+QMPG";
+      signing.signer = "ssh-keygen";
       signing.signByDefault = true;
     };
     bash.shellAliases = {
-      rebuild = "sudo darwin-rebuild switch --flake ~/.config/dotnix#holodeck";
+      rebuild = "home-manager switch --flake ~/.config/dotnix#picard";
+      rebuildSys = "sudo darwin-rebuild switch --flake ~/.config/dotnix#holodeck";
 
       # Work aliases
-      sso-gcloud = "$HOME/code/repos/deployment_tools/scripts/sso/gcloud.sh reset";
-      sso-aws = "$HOME/code/repos/deployment_tools/scripts/sso/aws.sh reset";
-      sso-all = "sso-gcloud && sso-aws";
-      # GCOM scripts
-      gcom-dev = "$DTOOLS_SCRIPTS/gcom/gcom-dev";
-      gcom-ops = "$DTOOLS_SCRIPTS/gcom/gcom-ops";
-      gcom = "$DTOOLS_SCRIPTS/gcom/gcom";
-      add-myself-to-org = "$DTOOLS_SCRIPTS/gcom/add-myself-to-org";
-      remove-myself-from-org = "$DTOOLS_SCRIPTS/gcom/remove-myself-from-org";
-      cleanup-my-orgs = "$DTOOLS_SCRIPTS/gcom/cleanup-my-orgs";
-      # Vault scripts
-      vault-get = "$DTOOLS_SCRIPTS/vault/vault-get";
-      vault-put = "$DTOOLS_SCRIPTS/vault/vault-put";
-      vault-patch = "$DTOOLS_SCRIPTS/vault/vault-patch";
-      vault-list = "$DTOOLS_SCRIPTS/vault/vault-list";
-      vault-token = "$DTOOLS_SCRIPTS/vault/vault-token";
-      vault-shell = "$DTOOLS_SCRIPTS/vault/vault-shell";
     };
     zsh.initContent = ''
       bindkey "^[[3~" delete-char
     '';
     zsh.shellAliases = {
-      rebuild = "sudo darwin-rebuild switch --flake ~/.config/dotnix#holodeck";
+      rebuild = "home-manager switch --flake ~/.config/dotnix#picard";
+      rebuildSys = "sudo darwin-rebuild switch --flake ~/.config/dotnix#holodeck";
 
       # Work aliases
-      sso-gcloud = "$HOME/code/repos/deployment_tools/scripts/sso/gcloud.sh reset";
-      sso-aws = "$HOME/code/repos/deployment_tools/scripts/sso/aws.sh reset";
-      sso-az = "$HOME/code/repos/deployment_tools/scripts/sso/az.sh reset";
-      sso-all = "sso-gcloud && sso-aws && sso-az";
-      # GCOM scripts
-      gcom-dev = "$DTOOLS_SCRIPTS/gcom/gcom-dev";
-      gcom-ops = "$DTOOLS_SCRIPTS/gcom/gcom-ops";
-      gcom = "$DTOOLS_SCRIPTS/gcom/gcom";
-      add-myself-to-org = "$DTOOLS_SCRIPTS/gcom/add-myself-to-org";
-      remove-myself-from-org = "$DTOOLS_SCRIPTS/gcom/remove-myself-from-org";
-      cleanup-my-orgs = "$DTOOLS_SCRIPTS/gcom/cleanup-my-orgs";
-      # Vault scripts
-      vault-get = "$DTOOLS_SCRIPTS/vault/vault-get";
-      vault-put = "$DTOOLS_SCRIPTS/vault/vault-put";
-      vault-patch = "$DTOOLS_SCRIPTS/vault/vault-patch";
-      vault-list = "$DTOOLS_SCRIPTS/vault/vault-list";
-      vault-token = "$DTOOLS_SCRIPTS/vault/vault-token";
-      vault-shell = "$DTOOLS_SCRIPTS/vault/vault-shell";
     };
     zsh.sessionVariables = {
-      GRAFANA_TEAM = "adaptive-telemetry";
-      DTOOLS_SCRIPTS = "$HOME/code/repos/deployment_tools/scripts";
+      NODE_EXTRA_CA_CERTS = "$HOME/.certs/zscaler_cert.pem";
+      CURL_CA_BUNDLE = "$HOME/.certs/zscaler_cert.pem";
+      CARGO_HTTP_CAINFO = "$HOME/.certs/zscaler_cert.pem";
+      CLAUDE_CODE_TMPDIR = "/tmp/claude";
+      MVM_NO_CHROME = 1;
+      SANDBOX_INSTALL_SKIP_RC = 1;
+      SANDBOX_INSTALL_AGENTS = "claude";
+      SANDBOX_NO_AUTOUPDATE = 1;
+      SSH_AUTH_SOCK = "$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock";
     };
   };
 
@@ -89,6 +74,23 @@
   home.sessionVariables = {
     # Add macOS-specific variables
   };
+
+  home.sessionPath = [
+    # Add macOS-specific PATH entries
+    "$HOME/.local/bin"
+    "$HOME/code/scripts"
+  ];
+
+  home.file.".wgetrc".text = ''
+    ca_certificate=/Users/bannach/.certs/zscaler_cert.pem
+  '';
+  # Symlink gitconfig from XDG config home
+  home.file.".gitconfig".source = config.lib.file.mkOutOfStoreSymlink "${config.xdg.configHome}/git/config";
+
+  home.activation.copyGitAllowedSigners = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    mkdir -p "$(dirname "${allowedSignersPath}")"
+    install -m 0644 "${allowedSigners}" "${allowedSignersPath}"
+  '';
 
   # User information
   home = {
