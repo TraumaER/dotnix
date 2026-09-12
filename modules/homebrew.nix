@@ -3,62 +3,25 @@
   pkgs,
   lib,
   ...
-}:
-with lib; let
-  cfg = config.homebrew;
-  brewPath =
-    if pkgs.stdenv.isDarwin
-    then "/opt/homebrew/bin/brew"
-    else "/home/linuxbrew/.linuxbrew/bin/brew";
+}: let
+  cfg = config.dotnix;
+  brew = lib.escapeShellArg cfg.brew.executable;
+  brewfile = pkgs.writeText "dotnix-Brewfile" (lib.concatMapStrings (p: "brew ${builtins.toJSON p}\n") cfg.brew.brews + lib.concatMapStrings (p: "cask ${builtins.toJSON p}\n") cfg.brew.casks);
+  shell = ''
+    if [[ -x ${brew} ]]; then
+      eval "$(${brew} shellenv)"
+    fi
+  '';
 in {
-  options.homebrew = {
-    enable = mkEnableOption "homebrew support";
-
-    brews = mkOption {
-      type = types.listOf types.str;
-      default = [];
-      description = "List of homebrew brews to install";
-    };
-    casks = mkOption {
-      type = types.listOf types.str;
-      default = [];
-      description = "List of homebrew casks to install";
-    };
-  };
-
-  config = mkIf cfg.enable {
-    # Add homebrew to PATH
-    home.sessionPath = mkIf (pkgs.stdenv.isLinux) [
-      "/home/linuxbrew/.linuxbrew/bin"
-    ];
-
-    home.activation.brewInstall = lib.hm.dag.entryAfter ["writeBoundary"] ''
-            if [ ${toString (length cfg.brews + length cfg.casks)} -gt 0 ]; then
-              $DRY_RUN_CMD echo "Installing Homebrew packages..."
-              $DRY_RUN_CMD cat > "Brewfile" << 'EOF'
-      ${concatMapStrings (pkg: "brew \"${pkg}\"\n") cfg.brews}
-      ${concatMapStrings (pkg: "cask \"${pkg}\"\n") cfg.casks}
-      EOF
-              $DRY_RUN_CMD ${brewPath} bundle --file="Brewfile"
-              $DRY_RUN_CMD rm -f "Brewfile"
-            fi
-    '';
-
-    # Shell integration using the modern approach
-    programs.bash.bashrcExtra = mkIf cfg.enable ''
-      if [[ "$OSTYPE" == "linux-gnu"* ]] && [[ -x "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then
-        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-      elif [[ "$OSTYPE" == "darwin"* ]] && [[ -x "/opt/homebrew/bin/brew" ]]; then
-        eval "$(/opt/homebrew/bin/brew shellenv)"
+  config = lib.mkIf cfg.features.homebrew {
+    home.activation.brewInstall = lib.mkIf (!cfg.integrated && (cfg.brew.brews != [] || cfg.brew.casks != [])) (lib.hm.dag.entryAfter ["writeBoundary"] ''
+      if [[ ! -x ${brew} ]]; then
+        echo "Homebrew executable missing: "${brew} >&2
+        exit 1
       fi
-    '';
-
-    programs.zsh.initContent = mkIf cfg.enable ''
-      if [[ "$OSTYPE" == "linux-gnu"* ]] && [[ -x "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then
-        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-      elif [[ "$OSTYPE" == "darwin"* ]] && [[ -x "/opt/homebrew/bin/brew" ]]; then
-        eval "$(/opt/homebrew/bin/brew shellenv)"
-      fi
-    '';
+      run env HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALL_CLEANUP=1 HOMEBREW_BUNDLE_NO_UPGRADE=1 ${brew} bundle install --no-upgrade --file=${brewfile}
+    '');
+    programs.bash.bashrcExtra = shell;
+    programs.zsh.initContent = shell;
   };
 }

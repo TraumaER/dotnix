@@ -20,7 +20,7 @@ with lib; let
 in {
   options.nvm.enable = mkEnableOption "Node Version Manager (nvm) support";
 
-  config = {
+  config = mkIf cfg.enable {
     # Fail fast if the option is enabled but Oh My Zsh is not
     assertions = [
       {

@@ -1,135 +1,123 @@
-# Dotnix - Cross-Platform Nix Configuration
+# Dotnix
 
-A minimal, cross-platform Nix configuration using home-manager and nix-darwin that works on macOS (ARM), Linux, and WSL.
+Reusable Nix modules for Apple Silicon macOS and x86-64 Linux/WSL. Core provides Bash/Zsh, Git, Neovim, search/navigation tools, terminal utilities, and fonts. It has no Git identity, signing key, work account, SSH agent override, or Go proxy default.
 
-## Structure
+## Onboarding
 
-```
-├── flake.nix              # Main flake definition
-├── home/                  # Home Manager configurations
-│   ├── shared.nix         # Shared configuration across platforms
-│   ├── darwin.nix         # macOS-specific configuration
-│   ├── linux.nix          # Linux-specific configuration
-│   └── wsl.nix            # WSL-specific configuration
-├── modules/               # Reusable modules
-│   ├── homebrew.nix       # Homebrew integration
-│   └── keychain.nix       # Funtoo Keychain configuration
-└── system/                # System-level configurations
-    ├── darwin.nix         # nix-darwin system configuration
-    └── settings.nix       # System settings scaffolding
-```
-
-## Platform Support
-
-- **macOS (ARM only)**: Uses nix-darwin + home-manager with Homebrew support
-- **Linux**: Uses home-manager with Homebrew and Keychain support
-- **WSL**: Terminal-focused configuration with Keychain support
-
-## Quick Start
-
-### Automated Setup
-
-Run the setup script to automatically install prerequisites for your platform:
-
-```bash
+```sh
+git clone <your-repository-url> /path/to/dotnix
+cd /path/to/dotnix
 ./setup.sh
 ```
 
-This script will:
-- Detect your operating system (macOS, Linux, or WSL)
-- Install Nix with flakes enabled
-- Install Homebrew (required for homebrew module)
-- Install platform-specific dependencies (Xcode Command Line Tools on macOS, build tools on Linux)
-- Configure Nix with experimental features enabled
+Setup installs Determinate Nix if Nix is absent, offers optional features, and generates `${XDG_CONFIG_HOME:-$HOME/.config}/dotnix-local`. It never activates the configuration. Existing Nix installations and daemon ownership are retained. Commands enable `nix-command` and `flakes` additively for their invocation; setup never rewrites `nix.conf`. Use a recent Nix with `flake update INPUT` and `allow-dirty-locks` support (Nix 2.24 or newer).
 
-### Manual Prerequisites (if not using setup script)
+macOS defaults to standalone Home Manager. `--mode darwin` selects integrated nix-darwin/Home Manager. An existing Darwin system profile selects integrated mode automatically; existing generated configurations retain their mode. Linux/WSL use standalone Home Manager.
 
-Install Nix with flakes enabled:
-```bash
-# Install Nix
-curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install --determinate
-
-# Install Homebrew (required for homebrew module)
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-# Enable flakes
-mkdir -p ~/.config/nix
-echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
+```sh
+./setup.sh --non-interactive --enable development --enable containers
+./scripts/dotnix doctor
+./scripts/dotnix build
+./scripts/dotnix rebuild
 ```
 
-### First-Time Setup
+After activation, `dotnix` is on PATH and `rebuild` calls the helper. Integrated macOS also provides `rebuildSys`. Both aliases select the generated local directory. Use `dotnix --config '/custom/configuration path' rebuild` or set `DOTNIX_LOCAL` to select a different configuration. The helper builds before switching, and only Darwin switching runs through sudo. Home Manager collision checks stop activation on unmanaged files.
 
-Since home-manager won't be available on the first run, use nix to run it:
+`./setup.sh --help` lists all flags. `--no-install` generates without installing prerequisites and requires Python 3. `--destination`, `--checkout`, `--username`, `--home`, `--config-home`, `--platform`, `--arch`, and `--brew-executable` override detection. Account home paths come from the account database, not an assumed `/home/USER` or `/Users/USER`. Paths containing spaces are supported. Unsupported targets are rejected before installation. Bootstrap uses Python 3 if present, otherwise the Python provided by the locked Nix setup package.
 
-#### macOS (System + Home Manager)
-```bash
-# First time - build and switch system configuration (includes home-manager)
-nix run nix-darwin -- switch --flake .#holodeck
+## Features and preferences
 
-# Or just Home Manager for first time
-nix run home-manager/master -- switch --flake .#user@darwin
+Each interactive feature has equivalent `--enable NAME` / `--disable NAME` flags. After generation, edit `preferences.json`; subsequent setup runs preserve it. Values in `settings` configure integrations.
 
-# Subsequent runs (after home-manager is installed)
-darwin-rebuild switch --flake .#holodeck
-home-manager switch --flake .#user@darwin
+| Feature | Contents / configuration |
+| --- | --- |
+| `development` | Go, Rust, Bun, mise, linters, build tools, HTTP tooling |
+| `containers` | Docker/Compose and Kubernetes clients; provide your own runtime |
+| `cloud` | AWS, Azure, Google Cloud, tenv |
+| `desktop` | Linux Firefox and clipboard tools; macOS Kap and AltTab through Homebrew |
+| `homebrew` | Brew integration; `settings.brew.brews` / `casks` select packages |
+| `nvm` | Pinned zsh-nvm plugin; downloads Node/NVM on use |
+| `keychain` | Keychain integration; set `keychain.keys` in `home.nix` |
+| `signing` | Requires `--signing-key`; `--signing-format ssh` or `openpgp` |
+| `githubSsh` | Rewrites GitHub HTTPS Git remotes to SSH |
+| `onePassword` | Requires `--one-password-socket`; install and enable the external SSH agent |
+| `java` | Requires `--jdk jdk21` (explicit nixpkgs JDK attribute) |
+| `browser` | Requires `--browser '/absolute/path/to/browser'`; Windows browser launching is optional |
+| `athens` | Requires `--athens-image gomods/athens:v0.15.0` or a digest |
+
+Selecting macOS desktop apps during setup also enables Homebrew. Setting `desktop` manually on macOS requires `homebrew`. Custom Brew executables must exist and be executable (integrated Darwin requires `PREFIX/bin/brew`); otherwise the conventional `/opt/homebrew/bin/brew` or `/home/linuxbrew/.linuxbrew/bin/brew` is used. Homebrew and its platform prerequisites are installed only when selected. Unsupported Linux package managers receive manual prerequisite guidance.
+
+Homebrew defaults to no cleanup, upgrade, or automatic update during activation. Its Brewfile lives in the Nix store; the caller's Brewfile is untouched. Standalone mode uses Home Manager activation, while integrated mode assigns Brew to nix-darwin. `settings.brew.executable` can override the machine-specific executable when needed. See the [nix-darwin Homebrew options](https://nix-darwin.github.io/nix-darwin/manual/#opt-homebrew.onActivation.cleanup).
+
+Signing requires explicit configuration. Set `settings.signing.allowedSigners` to the signer file's text or use `xdg.configFile."git/allowed_signers"` in your local module. Home Manager's declarative file handling preserves collision detection. Keychain and 1Password are mutually exclusive agent selections. Without either feature, existing `SSH_AUTH_SOCK` is retained.
+
+Athens requires a running Docker daemon, Docker Compose, and a `.local/athens/.netrc` file under your home containing credentials for private repositories. Protect that file with mode 0600 and never put credentials into Nix expressions (the Nix store is readable). Start it explicitly:
+
+```sh
+cd ~/.local/athens
+docker compose up -d
 ```
 
-#### Linux
-```bash
-# First time
-nix run home-manager/master -- switch --flake .#user@linux
+The proxy binds only to localhost. Enabling Athens sets the same `GOPROXY` in Bash and Zsh. Disabling it restores Go's normal behavior; setup does not start Docker or Athens.
 
-# Subsequent runs
-home-manager switch --flake .#user@linux
+## Local customization and moving machines
+
+The local directory contains:
+
+- `machine.json`: account, platform, deployment mode, checkout, XDG and Brew paths.
+- `preferences.json`: portable feature selections and integration settings.
+- `home.nix`: unrestricted Home Manager customizations.
+- `darwin.nix`: unrestricted Darwin customizations.
+- `flake.nix` / `flake.lock`: declared checkout input and reproducible dependency graph.
+
+For example, put identity and work settings in local `home.nix`:
+
+```nix
+{pkgs, ...}: {
+  programs.git.settings.user = {
+    name = "Your Name";
+    email = "you@example.org";
+  };
+  home.packages = [pkgs.jq];
+  home.sessionVariables.PROJECT_ROOT = "/your/projects";
+}
 ```
 
-#### WSL
-```bash
-# First time
-nix run home-manager/master -- switch --flake .#user@wsl
+Repeated setup leaves existing files unchanged. After moving the checkout or copying the local configuration to another machine:
 
-# Subsequent runs
-home-manager switch --flake .#user@wsl
+```sh
+/path/to/new/checkout/setup.sh --reconfigure --destination '/path/to/dotnix-local'
 ```
 
-### Development Shell
-```bash
-nix develop
+Reconfiguration refreshes machine information and rebinds the declared source URL, retaining preferences and local modules, including local flake edits. Use `--mode home-manager` when moving an integrated Darwin configuration to Linux. Review platform-specific preferences (Brew casks, agent/browser paths) and local modules for the new host. Reconfiguration deliberately ignores feature flags; edit the retained preferences to change selections.
+
+## Dependency updates and recovery
+
+Before doctor/build/rebuild, the helper refreshes **only** the local `dotnix` input and verifies its upstream revisions against the checkout's `flake.lock`. Upstream updates belong in this repository:
+
+```sh
+nix flake update nixpkgs home-manager nix-darwin
 ```
 
-## Configuration
+Review and commit the resulting lock change. Local checkout edits are included through a declared `git+file` input; **new source files must be added with `git add`** before evaluation. Untracked and ignored files are excluded. Local dirty source locks are permitted by the helper so uncommitted tracked edits can be built; keep these machine-specific locks local. See [Nix input update semantics](https://nix.dev/manual/nix/latest/command-ref/new-cli/nix3-flake-update.html).
 
-### User Information
-Update the username and home directory in each platform configuration:
-- `home/darwin.nix`
-- `home/linux.nix` 
-- `home/wsl.nix`
+If the local lock conflicts with the checkout's dependency revisions, remove only the local `flake.lock` and rebuild. If activation reports existing shell/Git/signer files, back them up or merge their contents explicitly and retry; dotnix does not overwrite them or automatically create backup suffixes. Use an existing Home Manager generation's `activate` to roll back; integrated installations can use their locked `darwin-rebuild --rollback` runner. Build/evaluation success does not prove activation will succeed.
 
-### Adding Packages
-Add packages to `home/shared.nix` for cross-platform packages, or to platform-specific files.
+## Module API and contributing
 
-### Homebrew
-Homebrew is automatically installed and configured for macOS and Linux. Add packages to the system configuration or use the homebrew module options.
+`homeModules.default`, `.darwin`, `.linux`, `.wsl` and `darwinModules.default` are exported alongside:
 
-### Keychain (Linux/WSL)
-Funtoo Keychain is configured for SSH key management on Linux and WSL. Configure keys in the keychain module options.
+```nix
+dotnix.lib.mkHomeConfiguration {
+  account = { username = "dev"; homeDirectory = "/srv/people/dev"; configHome = "/srv/preferences/dev"; };
+  system = "x86_64-linux";
+  platform = "wsl";
+  features.development = true;
+  settings = {};
+  modules = [./home.nix];
+}
+```
 
-### System Settings
-System settings are provided as scaffolding in `system/settings.nix` but are commented out by default. Uncomment and modify as needed.
+`mkDarwinConfiguration` takes the same account/features/settings, Darwin `modules`, and `homeModulesExtra`. It derives the primary user, system account and Home Manager identity from that account. Compatibility state versions remain Home Manager `25.05` and Darwin `6`. The generated local outputs are `homeConfigurations.default` and, for integrated mode, `darwinConfigurations.default`. Packages export `home-manager`, `darwin-rebuild` (macOS), `dotnix`, and `onboard` from the same locked inputs.
 
-## Features
-
-- ✅ Cross-platform support (macOS ARM, Linux, WSL)
-- ✅ Shared configuration with platform-specific overrides
-- ✅ Homebrew integration for macOS and Linux
-- ✅ Funtoo Keychain for SSH key management (Linux/WSL)
-- ✅ System settings scaffolding without automatic application
-- ✅ Terminal-focused WSL configuration
-- ✅ Modern Home Manager configuration patterns
-
-## Notes
-
-- macOS Intel support is intentionally excluded
-- System settings are scaffolded but not applied by default
-- WSL configuration focuses on terminal applications only
-- All configurations use modern Home Manager patterns (no deprecated options)
+`examples/darwin-settings.nix` is inactive documentation: copy desired settings into your local Darwin module. Contributor commands and verification expectations are in [CLAUDE.md](CLAUDE.md).

@@ -1,91 +1,56 @@
 {
-  description = "Cross-platform Nix configuration with home-manager";
-
+  description = "Portable Home Manager and nix-darwin modules";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
     nix-darwin = {
       url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-
   outputs = inputs @ {
     self,
     nixpkgs,
     home-manager,
     nix-darwin,
   }: let
-    systems = ["x86_64-linux" "aarch64-darwin"];
-
-    forAllSystems = nixpkgs.lib.genAttrs systems;
+    systems = ["aarch64-darwin" "x86_64-linux"];
+    each = nixpkgs.lib.genAttrs systems;
+    constructors = import ./lib/configurations.nix {inherit inputs;};
   in {
-    # Home Manager configurations
-    homeConfigurations = {
-      # macOS (ARM)
-      "picard" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.aarch64-darwin;
-        modules = [
-          ./home/darwin.nix
-        ];
-        extraSpecialArgs = {inherit inputs;};
-      };
-
-      # Linux
-      "riker" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.x86_64-linux;
-        modules = [
-          ./home/linux.nix
-        ];
-        extraSpecialArgs = {inherit inputs;};
-      };
-
-      # WSL
-      "crusher" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.x86_64-linux;
-        modules = [
-          ./home/wsl.nix
-        ];
-        extraSpecialArgs = {inherit inputs;};
-      };
+    lib = constructors;
+    homeModules = {
+      default = import ./home/shared.nix;
+      darwin = import ./home/darwin.nix;
+      linux = import ./home/linux.nix;
+      wsl = import ./home/wsl.nix;
     };
-
-    # System configurations
-    darwinConfigurations = {
-      "holodeck" = nix-darwin.lib.darwinSystem {
-        system = "aarch64-darwin";
-        modules = [
-          ./system/darwin.nix
-          home-manager.darwinModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users.bannach = import ./home/darwin.nix;
-            home-manager.extraSpecialArgs = {inherit inputs;};
-            home-manager.backupFileExtension = "bak";
-          }
-        ];
-        specialArgs = {inherit inputs;};
-      };
-    };
-
-    # Development shell
-    devShells = forAllSystems (system: {
-      default = nixpkgs.legacyPackages.${system}.mkShell {
-        buildInputs = with nixpkgs.legacyPackages.${system};
-          [
-            git
-            vim
-          ]
-          ++ nixpkgs.lib.optionals (nixpkgs.lib.hasSuffix "darwin" system) [
-            # Darwin-specific tools can be added here
-          ];
-      };
+    darwinModules.default = import ./system/darwin.nix;
+    packages = each (system: let
+      pkgs = nixpkgs.legacyPackages.${system};
+    in
+      {
+        default = self.packages.${system}.dotnix;
+        dotnix = import ./lib/helper.nix {inherit pkgs;};
+        onboard = pkgs.writeShellApplication {
+          name = "dotnix-setup";
+          runtimeInputs = [pkgs.python3 pkgs.nix pkgs.git pkgs.curl];
+          text = ''exec python3 ${./scripts/setup.py} "$@"'';
+        };
+        home-manager = home-manager.packages.${system}.home-manager;
+      }
+      // nixpkgs.lib.optionalAttrs (system == "aarch64-darwin") {
+        darwin-activate = import ./lib/darwin-activate.nix {inherit pkgs;};
+        darwin-rebuild = nix-darwin.packages.${system}.darwin-rebuild;
+      });
+    checks = each (system: import ./tests/evaluation.nix {inherit system constructors inputs;});
+    devShells = each (system: let
+      pkgs = nixpkgs.legacyPackages.${system};
+    in {
+      default = pkgs.mkShell {packages = [pkgs.git pkgs.python3 pkgs.shellcheck pkgs.alejandra];};
     });
   };
 }
