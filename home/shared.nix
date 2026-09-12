@@ -14,7 +14,7 @@
     ls = "eza ${ezaFlags}";
     tree = "eza ${ezaFlags} -I '.git' -a --tree";
     grep = "grep --color=auto";
-    initYarn = "corepack enable && corepack install --global yarn@latest";
+    rebuild = "dotnix rebuild";
   };
 
   # Common shell functions shared between bash and zsh
@@ -31,77 +31,43 @@
   '';
 in {
   imports = [
+    ../modules/options.nix
+    ../modules/features.nix
+    ../modules/homebrew.nix
+    ../modules/keychain.nix
+    ../modules/nvm.nix
     ../modules/neovim.nix
   ];
 
-  # Shared packages across all platforms
   home.packages = with pkgs; [
-    # Shell configuration
-
-    # Nerd Fonts
     nerd-fonts.hack
     nerd-fonts.fira-code
     nerd-fonts.jetbrains-mono
     nerd-fonts.ubuntu
     nerd-fonts.ubuntu-mono
-
-    # Terminal utilities
-    alejandra # Nix formatter
+    alejandra
     bat
     curl
-    posting
-    mise
-    bun
-
-    # Docker stuff
-    docker
-    docker-compose
-    kind
-    kubectl
-    kubectx
-    k9s
-
-    # IAC
-    tenv # OpenTofu/Terraform/Terragrunt/Atmos version manager
-    (google-cloud-sdk.withExtraComponents (
-      with google-cloud-sdk.components; [
-        gke-gcloud-auth-plugin
-      ]
-    ))
-    azure-cli
-    awscli2
-
-    # Version control
-    gh # GitHub CLI
+    gh
     git
-    pre-commit
-    zizmor
-
-    actionlint
-    eza # ls on steroids
+    eza
     fd
     fzf
     fx
     gnupg
-    go
-    go-jsonnet
-    golangci-lint
-    mage
     htop
     fastfetch
     openssh
     pay-respects
     ripgrep
-    rustup
-    rustscan
-    shellcheck
-    shfmt
     tmux
     tldr
     tree
     vim
     wget
   ];
+  fonts.fontconfig.enable = true;
+  xdg.enable = true;
 
   # Shared program configurations
   programs = {
@@ -109,24 +75,12 @@ in {
 
     git = {
       enable = true;
-      # Configure git settings here
-      signing.format = lib.mkDefault "openpgp";
-      signing.signByDefault = lib.mkDefault true;
-      signing.key = lib.mkDefault "F46A524D943277BD";
-
       settings = {
-        user.name = lib.mkDefault "Adam Bannach";
-        user.email = lib.mkDefault "4845159+TraumaER@users.noreply.github.com";
         core = {
           excludesFile = "${config.home.homeDirectory}/.gitignore_global";
         };
         init = {
           defaultBranch = "main";
-        };
-        url = {
-          "git@github.com:" = {
-            insteadOf = "https://github.com/";
-          };
         };
         alias = {
           # https://fortes.com/2022/make-git-better-with-fzf/
@@ -148,9 +102,7 @@ in {
       enable = true;
       shellAliases = commonShellAliases;
       initExtra = commonShellFunctions;
-      sessionVariables = {
-        GOPROXY = "http://localhost:3100,direct";
-      };
+
       profileExtra = ''
         if [ -t 1 ] && [ "$SHELL" != "$(command -v zsh)" ]; then
           exec zsh
@@ -160,33 +112,15 @@ in {
 
     zsh = {
       enable = true;
+      dotDir = lib.mkDefault config.home.homeDirectory;
       enableCompletion = true;
       autosuggestion.enable = true;
       syntaxHighlighting.enable = true;
       shellAliases = commonShellAliases;
       initContent = commonShellFunctions;
-      sessionVariables = {
-        # GOPROXY = "http://localhost:3100,direct";
-      };
       oh-my-zsh = {
         enable = true;
-        custom = "${config.home.homeDirectory}/.oh-my-zsh/custom";
-        plugins = [
-          "brew"
-          "docker"
-          "docker-compose"
-          "kubectx"
-          "git"
-          "kubectl"
-          "debian"
-          "npm"
-          "nvm"
-          "colored-man-pages"
-          "colorize"
-          "pip"
-          "python"
-          "gh"
-        ];
+        plugins = ["git" "colored-man-pages" "colorize" "gh"];
       };
     };
 
@@ -211,40 +145,6 @@ in {
       nix-direnv.enable = true;
     };
   };
-
-  # Shared services
-  services = {
-    # Add shared services here
-  };
-
-  # Athens Go module proxy docker-compose setup
-  # Create docker-compose.yml for Athens proxy
-  # Note: You'll need to manually create ~/.local/athens/.netrc with credentials for private repositories
-  # Example .netrc format:
-  # machine github.com
-  # login your-username
-  # password your-token
-  home.file.".local/athens/docker-compose.yml".text = ''
-    name: Athens Go Proxy
-    services:
-      athens:
-        image: gomods/athens:latest
-        container_name: athens_go_proxy
-        ports:
-          - "3100:3000"
-        volumes:
-          - athens_storage:/var/lib/athens
-          - ./.netrc:/etc/.netrc:ro
-        environment:
-          - ATHENS_STORAGE_TYPE=disk
-          - ATHENS_DISK_STORAGE_ROOT=/var/lib/athens
-          - ATHENS_TIMEOUT=300
-          - ATHENS_NETRC_PATH=/etc/.netrc
-        restart: unless-stopped
-    volumes:
-      athens_storage:
-        driver: local
-  '';
 
   home.file.".gitignore_global".text = ''
     # Global gitignore patterns

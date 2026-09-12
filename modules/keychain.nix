@@ -12,7 +12,7 @@ in {
 
     keys = mkOption {
       type = types.listOf types.str;
-      default = ["id_ed25519"];
+      default = [];
       description = "List of SSH keys to load with keychain";
     };
 
@@ -31,7 +31,7 @@ in {
     programs.bash.bashrcExtra = ''
       # Keychain integration
       if command -v keychain &> /dev/null; then
-        eval $(keychain ${concatStringsSep " " cfg.extraFlags} --eval ${concatStringsSep " " cfg.keys})
+        eval "$(keychain ${escapeShellArgs cfg.extraFlags} --eval ${escapeShellArgs cfg.keys})"
       fi
     '';
 
@@ -39,7 +39,7 @@ in {
     programs.zsh.envExtra = ''
       # Keychain integration
       if command -v keychain &> /dev/null; then
-        eval $(keychain ${concatStringsSep " " cfg.extraFlags} --eval ${concatStringsSep " " cfg.keys})
+        eval "$(keychain ${escapeShellArgs cfg.extraFlags} --eval ${escapeShellArgs cfg.keys})"
       fi
     '';
 
@@ -47,7 +47,7 @@ in {
     programs.fish.interactiveShellInit = mkIf config.programs.fish.enable ''
       # Keychain integration
       if command -v keychain > /dev/null
-        eval (keychain ${concatStringsSep " " cfg.extraFlags} --eval ${concatStringsSep " " cfg.keys})
+        eval (keychain ${escapeShellArgs cfg.extraFlags} --eval ${escapeShellArgs cfg.keys})
       end
     '';
   };
