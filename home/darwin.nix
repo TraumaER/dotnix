@@ -76,9 +76,6 @@ in {
     "$HOME/go/bin"
   ];
 
-  # home.file.".wgetrc".text = ''
-  #   ca_certificate=/Users/bannach/.certs/zscaler_cert.pem
-  # '';
   # Symlink gitconfig from XDG config home
   home.file.".gitconfig".source = config.lib.file.mkOutOfStoreSymlink "${config.xdg.configHome}/git/config";
 
