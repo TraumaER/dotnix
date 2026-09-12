@@ -3,11 +3,14 @@ on: [push, pull_request]
 jobs:
   native:
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-15]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: DeterminateSystems/nix-installer-action@v17
       - run: python3 -m unittest discover -s tests -v
       - run: nix develop --command shellcheck setup.sh scripts/dotnix
