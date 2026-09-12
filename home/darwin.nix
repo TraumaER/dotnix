@@ -31,13 +31,13 @@ in {
     };
     git = {
       settings = {
-        user.email = "244587300+abannach-onebrief@users.noreply.github.com";
         gpg.ssh.allowedSignersFile = allowedSignersPath;
       };
       signing.format = "ssh";
-      signing.key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILEFX2ZiAHE1UWQ7f3AWylMJBH+bJXQEss6hxkb+QMPG";
+      signing.key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKYRHN7G3M8w1wtg75gg8f4nl3YVtqA9bJt5afi/VErC";
       signing.signer = "ssh-keygen";
       signing.signByDefault = true;
+      lfs.enable = true;
     };
     bash.shellAliases = {
       rebuild = "home-manager switch --flake ~/.config/dotnix#picard";
@@ -55,15 +55,9 @@ in {
       # Work aliases
     };
     zsh.sessionVariables = {
-      NODE_EXTRA_CA_CERTS = "$HOME/.certs/zscaler_cert.pem";
-      CURL_CA_BUNDLE = "$HOME/.certs/zscaler_cert.pem";
-      CARGO_HTTP_CAINFO = "$HOME/.certs/zscaler_cert.pem";
-      CLAUDE_CODE_TMPDIR = "/tmp/claude";
-      MVM_NO_CHROME = 1;
-      SANDBOX_INSTALL_SKIP_RC = 1;
-      SANDBOX_INSTALL_AGENTS = "claude";
-      SANDBOX_NO_AUTOUPDATE = 1;
       SSH_AUTH_SOCK = "$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock";
+      GCP_ACCOUNT_EMAIL = "bannach@digits.com";
+      JAVA_HOME = "\"$(/usr/libexec/java_home -v 21)\"";
     };
   };
 
@@ -79,11 +73,12 @@ in {
     # Add macOS-specific PATH entries
     "$HOME/.local/bin"
     "$HOME/code/scripts"
+    "$HOME/go/bin"
   ];
 
-  home.file.".wgetrc".text = ''
-    ca_certificate=/Users/bannach/.certs/zscaler_cert.pem
-  '';
+  # home.file.".wgetrc".text = ''
+  #   ca_certificate=/Users/bannach/.certs/zscaler_cert.pem
+  # '';
   # Symlink gitconfig from XDG config home
   home.file.".gitconfig".source = config.lib.file.mkOutOfStoreSymlink "${config.xdg.configHome}/git/config";
 

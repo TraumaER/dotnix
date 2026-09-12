@@ -166,7 +166,7 @@ in {
       shellAliases = commonShellAliases;
       initContent = commonShellFunctions;
       sessionVariables = {
-        GOPROXY = "http://localhost:3100,direct";
+        # GOPROXY = "http://localhost:3100,direct";
       };
       oh-my-zsh = {
         enable = true;
@@ -246,22 +246,20 @@ in {
         driver: local
   '';
 
-  # Temporarily skip gitignore global until sandbox containers support it
-  #
-  #  home.file.".gitignore_global".text = ''
-  #    # Global gitignore patterns
-  #    .DS_Store
-  #    .idea/
-  #    .vscode/
-  #    node_modules/
-  #    dist/
-  #    build/
-  #    target/
-  #    *.log
-  #    lefthook-local.yml
-  #    CLAUDE.local.md
-  #    settings.local.json
-  #  '';
+  home.file.".gitignore_global".text = ''
+    # Global gitignore patterns
+    .DS_Store
+    .idea/
+    .vscode/
+    node_modules/
+    dist/
+    build/
+    target/
+    *.log
+    lefthook-local.yml
+    CLAUDE.local.md
+    settings.local.json
+  '';
 
   # Home Manager configuration
   home.stateVersion = "25.05";
