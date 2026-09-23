@@ -33,6 +33,7 @@ Each interactive feature has equivalent `--enable NAME` / `--disable NAME` flags
 | --- | --- |
 | `development` | Go, Rust, Bun, mise, linters, build tools, HTTP tooling |
 | `containers` | Docker/Compose and Kubernetes clients; provide your own runtime |
+| `colima` | Colima runtime plus the `containers` tools, installed through Nix; start manually |
 | `cloud` | AWS, Azure, Google Cloud, tenv |
 | `desktop` | Linux Firefox and clipboard tools; macOS Kap and AltTab through Homebrew |
 | `homebrew` | Brew integration; `settings.brew.brews` / `casks` select packages |
@@ -51,7 +52,17 @@ Homebrew defaults to no cleanup, upgrade, or automatic update during activation.
 
 Signing requires explicit configuration. Set `settings.signing.allowedSigners` to the signer file's text or use `xdg.configFile."git/allowed_signers"` in your local module. Home Manager's declarative file handling preserves collision detection. Keychain and 1Password are mutually exclusive agent selections. Without either feature, existing `SSH_AUTH_SOCK` is retained.
 
-Athens requires a running Docker daemon, Docker Compose, and a `.local/athens/.netrc` file under your home containing credentials for private repositories. Protect that file with mode 0600 and never put credentials into Nix expressions (the Nix store is readable). Start it explicitly:
+To use Colima as an alternate runtime, select `--enable colima` during initial setup. For an existing configuration, set `features.colima` to `true` in the local `preferences.json` and run `rebuild`. Then start it explicitly:
+
+```sh
+colima start --runtime docker
+docker context use colima
+docker info
+```
+
+Colima creates and activates its Docker context when started. Use `docker context ls` and `docker context use <name>` to switch to another runtime, and `colima stop` to stop its VM. Enabling the feature does not start the VM or change Docker contexts during activation. See the [Colima runtime documentation](https://colima.run/docs/runtimes/).
+
+Athens requires a running Docker daemon (for example, Colima), Docker Compose, and a `.local/athens/.netrc` file under your home containing credentials for private repositories. Protect that file with mode 0600 and never put credentials into Nix expressions (the Nix store is readable). Start it explicitly:
 
 ```sh
 cd ~/.local/athens

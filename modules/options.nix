@@ -15,7 +15,7 @@
   };
 in {
   options.dotnix = {
-    features = lib.genAttrs ["development" "containers" "cloud" "desktop" "homebrew" "nvm" "keychain" "signing" "githubSsh" "onePassword" "java" "browser" "athens"] (name: mkEnableOption name);
+    features = lib.genAttrs ["development" "containers" "colima" "cloud" "desktop" "homebrew" "nvm" "keychain" "signing" "githubSsh" "onePassword" "java" "browser" "athens"] (name: mkEnableOption name);
     localDirectory = nullable;
     integrated = mkOption {
       type = types.bool;

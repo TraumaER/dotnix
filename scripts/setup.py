@@ -11,7 +11,7 @@ import subprocess
 import sys
 from urllib.parse import quote
 
-FEATURES = ('development containers cloud desktop homebrew nvm keychain signing '
+FEATURES = ('development containers colima cloud desktop homebrew nvm keychain signing '
             'githubSsh onePassword java browser athens').split()
 
 

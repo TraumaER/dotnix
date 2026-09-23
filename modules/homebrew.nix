@@ -7,11 +7,6 @@
   cfg = config.dotnix;
   brew = lib.escapeShellArg cfg.brew.executable;
   brewfile = pkgs.writeText "dotnix-Brewfile" (lib.concatMapStrings (p: "brew ${builtins.toJSON p}\n") cfg.brew.brews + lib.concatMapStrings (p: "cask ${builtins.toJSON p}\n") cfg.brew.casks);
-  shell = ''
-    if [[ -x ${brew} ]]; then
-      eval "$(${brew} shellenv)"
-    fi
-  '';
 in {
   config = lib.mkIf cfg.features.homebrew {
     home.activation.brewInstall = lib.mkIf (!cfg.integrated && (cfg.brew.brews != [] || cfg.brew.casks != [])) (lib.hm.dag.entryAfter ["writeBoundary"] ''
@@ -21,7 +16,7 @@ in {
       fi
       run env HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALL_CLEANUP=1 HOMEBREW_BUNDLE_NO_UPGRADE=1 ${brew} bundle install --no-upgrade --file=${brewfile}
     '');
-    programs.bash.bashrcExtra = shell;
-    programs.zsh.initContent = shell;
+    # Let the Oh My Zsh brew plugin initialize Homebrew, including custom installs.
+    programs.zsh.sessionVariables.BREW_LOCATION = cfg.brew.executable;
   };
 }

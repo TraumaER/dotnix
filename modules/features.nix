@@ -6,6 +6,7 @@
 }: let
   cfg = config.dotnix;
   f = cfg.features;
+  containerTools = f.containers || f.colima;
   browserLauncher = pkgs.writeShellScript "dotnix-browser" ''
     exec ${lib.escapeShellArg cfg.browser} "$@"
   '';
@@ -53,13 +54,14 @@ in {
   home.packages =
     [(import ../lib/helper.nix {inherit pkgs;})]
     ++ lib.optionals f.development (with pkgs; [posting mise bun pre-commit zizmor actionlint go go-jsonnet golangci-lint mage rustup rustscan shellcheck shfmt])
-    ++ lib.optionals f.containers (with pkgs; [docker docker-compose kind kubectl kubectx k9s])
+    ++ lib.optionals containerTools (with pkgs; [docker docker-compose kind kubectl kubectx k9s])
+    ++ lib.optionals f.colima [pkgs.colima]
     ++ lib.optionals f.cloud (with pkgs; [tenv (google-cloud-sdk.withExtraComponents (with google-cloud-sdk.components; [gke-gcloud-auth-plugin])) azure-cli awscli2])
     ++ lib.optionals (f.desktop && pkgs.stdenv.hostPlatform.isLinux) (with pkgs; [firefox xclip wl-clipboard]);
   programs.bash.shellAliases = {rebuild = lib.mkForce helper;} // lib.optionalAttrs cfg.integrated {rebuildSys = helper;};
   programs.zsh.shellAliases = {rebuild = lib.mkForce helper;} // lib.optionalAttrs cfg.integrated {rebuildSys = helper;};
   programs.zsh.oh-my-zsh.plugins =
-    lib.optionals f.containers ["docker" "docker-compose" "kubectx" "kubectl"]
+    lib.optionals containerTools ["docker" "docker-compose" "kubectx" "kubectl"]
     ++ lib.optionals f.development ["npm" "pip" "python"] ++ lib.optionals f.homebrew ["brew"];
   home.sessionPath = ["${config.home.homeDirectory}/.local/bin"];
   programs.git = lib.mkMerge [
