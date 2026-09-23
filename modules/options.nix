@@ -24,7 +24,7 @@ in {
     };
     brew = {
       executable = string (
-        if pkgs.stdenv.isDarwin
+        if pkgs.stdenv.hostPlatform.isDarwin
         then "/opt/homebrew/bin/brew"
         else "/home/linuxbrew/.linuxbrew/bin/brew"
       );

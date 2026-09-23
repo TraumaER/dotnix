@@ -67,7 +67,8 @@ in {
     wget
   ];
   fonts.fontconfig.enable = true;
-  xdg.enable = true;
+  # Keep application defaults by leaving XDG base-directory variables unset.
+  xdg.enable = false;
 
   # Shared program configurations
   programs = {

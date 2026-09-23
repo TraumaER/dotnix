@@ -9,7 +9,7 @@
     (constructors.mkHomeConfiguration {
       inherit system;
       platform =
-        if pkgs.stdenv.isDarwin
+        if pkgs.stdenv.hostPlatform.isDarwin
         then "darwin"
         else "linux";
       account = {

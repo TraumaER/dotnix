@@ -15,10 +15,10 @@
     then "dotnix rebuild"
     else "dotnix --config ${lib.escapeShellArg cfg.localDirectory} rebuild";
 in {
-  dotnix.brew.casks = lib.mkIf (f.desktop && pkgs.stdenv.isDarwin) ["kap" "alt-tab"];
+  dotnix.brew.casks = lib.mkIf (f.desktop && pkgs.stdenv.hostPlatform.isDarwin) ["kap" "alt-tab"];
   assertions = [
     {
-      assertion = !(f.desktop && pkgs.stdenv.isDarwin) || f.homebrew;
+      assertion = !(f.desktop && pkgs.stdenv.hostPlatform.isDarwin) || f.homebrew;
       message = "macOS desktop applications require Homebrew";
     }
     {
@@ -46,7 +46,7 @@ in {
       message = "Athens requires an explicit numeric version tag or sha256 digest";
     }
     {
-      assertion = pkgs.stdenv.isDarwin || cfg.brew.casks == [];
+      assertion = pkgs.stdenv.hostPlatform.isDarwin || cfg.brew.casks == [];
       message = "Homebrew casks require macOS";
     }
   ];
@@ -55,7 +55,7 @@ in {
     ++ lib.optionals f.development (with pkgs; [posting mise bun pre-commit zizmor actionlint go go-jsonnet golangci-lint mage rustup rustscan shellcheck shfmt])
     ++ lib.optionals f.containers (with pkgs; [docker docker-compose kind kubectl kubectx k9s])
     ++ lib.optionals f.cloud (with pkgs; [tenv (google-cloud-sdk.withExtraComponents (with google-cloud-sdk.components; [gke-gcloud-auth-plugin])) azure-cli awscli2])
-    ++ lib.optionals (f.desktop && pkgs.stdenv.isLinux) (with pkgs; [firefox xclip wl-clipboard]);
+    ++ lib.optionals (f.desktop && pkgs.stdenv.hostPlatform.isLinux) (with pkgs; [firefox xclip wl-clipboard]);
   programs.bash.shellAliases = {rebuild = lib.mkForce helper;} // lib.optionalAttrs cfg.integrated {rebuildSys = helper;};
   programs.zsh.shellAliases = {rebuild = lib.mkForce helper;} // lib.optionalAttrs cfg.integrated {rebuildSys = helper;};
   programs.zsh.oh-my-zsh.plugins =

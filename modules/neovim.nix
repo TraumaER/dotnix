@@ -1,6 +1,13 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  lib,
+  ...
+}: {
   programs.neovim = {
     enable = true;
+    # Preserve the providers enabled before Home Manager 26.05.
+    withRuby = lib.mkDefault true;
+    withPython3 = lib.mkDefault true;
     plugins = with pkgs.vimPlugins; [
       vim-nix
       vim-gitgutter
