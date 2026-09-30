@@ -19,6 +19,19 @@
 
   # Common shell functions shared between bash and zsh
   commonShellFunctions = ''
+    # Prune local branches merged into origin/main or with a deleted upstream
+    git-prune-local() {
+      git fetch origin --prune || return
+      {
+        git branch --merged origin/main --format='%(refname:short)'
+        LC_ALL=C git for-each-ref --format='%(refname:short) %(upstream:track)' refs/heads |
+          awk '$2 == "[gone]" { print $1 }'
+      } |
+        sort -u |
+        grep -vx 'main' |
+        xargs -I {} git branch -D -- '{}'
+    }
+
     # Fuzzy-select a git worktree and cd into it
     wt() {
       local dir
